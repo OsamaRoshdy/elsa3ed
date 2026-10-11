@@ -1,0 +1,215 @@
+@import 'tailwindcss';
+@import 'select2/dist/css/select2.css';
+
+@source '../../vendor/laravel/framework/src/Illuminate/Pagination/resources/views/*.blade.php';
+@source '../../storage/framework/views/*.php';
+
+@theme {
+    --font-sans: 'Instrument Sans', 'Cairo', ui-sans-serif, system-ui, sans-serif, 'Apple Color Emoji',
+        'Segoe UI Emoji', 'Segoe UI Symbol', 'Noto Color Emoji';
+    --font-arabic: 'Cairo', 'Instrument Sans', ui-sans-serif, system-ui, sans-serif;
+
+    /* Theme colour: #ef4444 (buttons, links, highlights); hover uses brand-700. */
+    --color-brand-50: #fef2f2;
+    --color-brand-100: #fee2e2;
+    --color-brand-200: #fecaca;
+    --color-brand-500: #f87171;
+    --color-brand-600: #ef4444;
+    --color-brand-700: #dc2626;
+    --color-brand-900: #7f1d1d;
+}
+
+[x-cloak] {
+    display: none !important;
+}
+
+/* Logo loader: the gear in the brand mark spins while a page is loading. */
+.logo-gear {
+    transform-box: fill-box;
+    transform-origin: center;
+    animation: logo-gear-spin 1.4s cubic-bezier(0.65, 0, 0.35, 1) infinite;
+}
+
+@keyframes logo-gear-spin {
+    to {
+        transform: rotate(360deg);
+    }
+}
+
+@media (prefers-reduced-motion: reduce) {
+    .logo-gear {
+        animation-duration: 4s;
+        animation-timing-function: linear;
+    }
+}
+
+/* Native checkboxes, radio buttons and range sliders use the theme colour instead of the browser's blue. */
+input[type='checkbox'],
+input[type='radio'],
+input[type='range'] {
+    accent-color: var(--color-brand-600);
+}
+
+html[lang='ar'] body {
+    font-family: var(--font-arabic);
+}
+
+@layer components {
+    .card {
+        @apply rounded-2xl border border-slate-200/70 bg-white shadow-sm shadow-slate-200/40;
+    }
+
+    .btn,
+    .btn-primary,
+    .btn-secondary,
+    .btn-danger {
+        @apply inline-flex items-center justify-center gap-2 rounded-xl px-4 py-2.5 text-sm font-semibold transition focus:outline-none focus-visible:ring-2 focus-visible:ring-brand-500 focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-60;
+    }
+
+    .btn-primary {
+        @apply bg-brand-600 text-white shadow-sm shadow-brand-600/30 hover:bg-brand-700;
+    }
+
+    .btn-secondary {
+        @apply border border-slate-200 bg-white text-slate-700 hover:bg-slate-50;
+    }
+
+    .btn-danger {
+        @apply bg-rose-600 text-white hover:bg-rose-700;
+    }
+
+    .input {
+        @apply block w-full rounded-xl border border-slate-200 bg-white px-3.5 py-2.5 text-sm text-slate-900 shadow-xs placeholder:text-slate-400 focus:border-brand-500 focus:ring-4 focus:ring-brand-100 focus:outline-none;
+    }
+
+    .label {
+        @apply mb-1.5 block text-sm font-medium text-slate-700;
+    }
+
+    .table-wrap {
+        @apply overflow-x-auto;
+    }
+
+    .table {
+        @apply min-w-full text-sm;
+    }
+
+    .table thead th {
+        @apply bg-slate-50/80 px-4 py-3 text-start whitespace-nowrap text-xs font-semibold tracking-wide text-slate-500 uppercase;
+    }
+
+    .table tbody td {
+        @apply border-t border-slate-100 px-4 py-3.5 whitespace-nowrap text-slate-700;
+    }
+
+    .table tbody tr {
+        @apply transition hover:bg-slate-50/60;
+    }
+}
+
+/* Select2 — restyled to match the portal's inputs */
+.select2-container--default .select2-selection--single {
+    @apply h-[42px] rounded-xl border border-slate-200 bg-white shadow-xs;
+}
+
+.select2-container--default .select2-selection--single .select2-selection__rendered {
+    @apply ps-3.5 pe-14 text-sm leading-[40px] text-slate-900;
+}
+
+.select2-container--default .select2-selection--single .select2-selection__placeholder {
+    @apply text-slate-400;
+}
+
+.select2-container--default .select2-selection--single .select2-selection__arrow {
+    @apply end-2 h-[40px];
+}
+
+.select2-container--default .select2-selection--single .select2-selection__clear {
+    @apply me-7 h-[40px] text-lg text-slate-400 hover:text-rose-500;
+}
+
+.select2-container--default.select2-container--focus .select2-selection--single,
+.select2-container--default.select2-container--open .select2-selection--single {
+    @apply border-brand-500 ring-4 ring-brand-100;
+}
+
+.select2-dropdown {
+    @apply mt-1 overflow-hidden rounded-xl border border-slate-200 bg-white shadow-lg shadow-slate-200/60;
+}
+
+.select2-container--open .select2-dropdown--above {
+    @apply mt-0 mb-1;
+}
+
+.select2-search--dropdown {
+    @apply p-2;
+}
+
+.select2-container--default .select2-search--dropdown .select2-search__field {
+    @apply rounded-lg border border-slate-200 px-3 py-2 text-sm focus:border-brand-500 focus:ring-2 focus:ring-brand-100 focus:outline-none;
+}
+
+.select2-container--default .select2-results > .select2-results__options {
+    @apply max-h-64;
+}
+
+.select2-results__option {
+    @apply px-3.5 py-2.5 text-sm text-slate-700;
+}
+
+.select2-container--default .select2-results__option--highlighted.select2-results__option--selectable {
+    @apply bg-brand-50 text-brand-700;
+}
+
+.select2-container--default .select2-results__option--selected {
+    @apply bg-brand-600 font-semibold text-white;
+}
+
+.select2-results__message {
+    @apply text-slate-400;
+}
+
+/* Select2 multiple (e.g. a product's categories, brands and tags): input-like box with pill-shaped choices */
+.select2-container--default .select2-selection--multiple {
+    @apply relative flex min-h-[42px] items-center rounded-xl border border-slate-200 bg-white py-1 ps-1.5 pe-8 shadow-xs;
+}
+
+.select2-container--default.select2-container--focus .select2-selection--multiple,
+.select2-container--default.select2-container--open .select2-selection--multiple {
+    @apply border-brand-500 ring-4 ring-brand-100;
+}
+
+.select2-container--default .select2-selection--multiple .select2-selection__rendered {
+    @apply m-0 flex flex-wrap items-center gap-1.5 p-0;
+}
+
+.select2-container .select2-selection--multiple .select2-selection__rendered,
+.select2-container--default .select2-selection--multiple .select2-search--inline {
+    @apply inline-flex;
+}
+
+.select2-container--default .select2-selection--multiple .select2-selection__choice,
+.select2-container--default[dir='rtl'] .select2-selection--multiple .select2-selection__choice {
+    @apply m-0 inline-flex flex-row-reverse items-center gap-1 rounded-full border border-brand-200 bg-brand-50 py-1 ps-3 pe-1 text-sm font-medium text-brand-700;
+}
+
+.select2-container--default .select2-selection--multiple .select2-selection__choice__display {
+    @apply p-0;
+}
+
+.select2-container--default .select2-selection--multiple .select2-selection__choice__remove,
+.select2-container--default[dir='rtl'] .select2-selection--multiple .select2-selection__choice__remove {
+    @apply static grid size-5 place-items-center rounded-full border-0 p-0 text-base leading-none text-brand-500 transition hover:bg-brand-100 hover:text-brand-700;
+}
+
+.select2-container--default .select2-selection--multiple .select2-selection__choice__remove span {
+    @apply -mt-px;
+}
+
+.select2-container--default .select2-search--inline .select2-search__field {
+    @apply m-0 h-7 min-w-24 border-0 bg-transparent px-1.5 text-sm text-slate-900 placeholder:text-slate-400 focus:ring-0 focus:outline-none;
+}
+
+.select2-container--default .select2-selection--multiple .select2-selection__clear {
+    @apply absolute end-2 top-1/2 m-0 -translate-y-1/2 p-0 text-lg leading-none text-slate-400 hover:text-rose-500;
+}
