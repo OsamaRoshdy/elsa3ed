@@ -111,6 +111,8 @@
     "Last synchronized: :time": "آخر مزامنة: :time",
     "Leave blank to keep the current password.": "اتركه فارغًا للإبقاء على كلمة المرور الحالية.",
     "Let clients change the sort order": "السماح للعملاء بتغيير الترتيب",
+    "Show out-of-stock products": "عرض المنتجات غير المتوفرة",
+    "When off, products with no stock are hidden from the store. Products whose stock isn’t tracked in Daftra stay visible.": "عند الإيقاف، تُخفى المنتجات التي نفد مخزونها من المتجر. تبقى المنتجات التي لا يُتابع مخزونها في دفترة ظاهرة.",
     "Link invoice & complete": "ربط الفاتورة وإكمال الطلب",
     "Linked Daftra client": "عميل دفترة المرتبط",
     "Linked invoice": "الفاتورة المرتبطة",

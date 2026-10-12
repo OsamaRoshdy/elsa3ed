@@ -60,14 +60,16 @@
 
                 <p class="text-sm font-semibold text-slate-900">{{ __('Filters') }}</p>
 
-                <label class="mt-2.5 flex cursor-pointer items-center justify-between gap-3 border-b border-slate-100 pb-2.5 text-[13px] font-medium text-slate-700">
-                    {{ __('Available only') }}
-                    <span class="relative inline-flex">
-                        <input type="checkbox" name="stock" value="in_stock" @checked(($filters['stock'] ?? null) === 'in_stock') onchange="this.form.submit()" class="peer sr-only">
-                        <span class="h-5 w-9 rounded-full bg-slate-200 transition peer-checked:bg-brand-600 peer-focus-visible:ring-2 peer-focus-visible:ring-brand-500"></span>
-                        <span class="absolute start-0.5 top-0.5 size-4 rounded-full bg-white shadow transition peer-checked:translate-x-4 rtl:peer-checked:-translate-x-4"></span>
-                    </span>
-                </label>
+                @if ($showsOutOfStock)
+                    <label class="mt-2.5 flex cursor-pointer items-center justify-between gap-3 border-b border-slate-100 pb-2.5 text-[13px] font-medium text-slate-700">
+                        {{ __('Available only') }}
+                        <span class="relative inline-flex">
+                            <input type="checkbox" name="stock" value="in_stock" @checked(($filters['stock'] ?? null) === 'in_stock') onchange="this.form.submit()" class="peer sr-only">
+                            <span class="h-5 w-9 rounded-full bg-slate-200 transition peer-checked:bg-brand-600 peer-focus-visible:ring-2 peer-focus-visible:ring-brand-500"></span>
+                            <span class="absolute start-0.5 top-0.5 size-4 rounded-full bg-white shadow transition peer-checked:translate-x-4 rtl:peer-checked:-translate-x-4"></span>
+                        </span>
+                    </label>
+                @endif
 
                 @if ($categories->isNotEmpty())
                     <fieldset class="border-b border-slate-100 py-2.5" x-data="{ more: false }">

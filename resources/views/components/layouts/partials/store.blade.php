@@ -1,9 +1,11 @@
-{{-- Storefront layout for clients and guests (included by components.layouts.app). --}}
+{{-- Storefront layout for clients, guests and admins previewing the store (included by components.layouts.app). --}}
 @php
     $isClient = (bool) $user?->isClient();
     $hasCart = $isClient && $user->daftra_client_id;
     $vehicleLabel = $garage->label();
-    $accountLinks = [
+    $accountLinks = $user?->isAdmin() ? [
+        ['admin.dashboard', 'admin.*', 'home', __('Dashboard')],
+    ] : [
         ['dashboard', 'dashboard', 'home', __('Dashboard')],
         ['cart.show', 'cart.*', 'cart', __('My Order')],
         ['orders.index', 'orders.*', 'clipboard', __('Orders')],
@@ -230,7 +232,7 @@
                 <div>
                     <p class="text-sm font-semibold text-slate-900">{{ __('My Account') }}</p>
                     <ul class="mt-3 space-y-2 text-sm text-slate-500">
-                        @if ($isClient)
+                        @if ($user)
                             @foreach ($accountLinks as [$route, $pattern, $icon, $label])
                                 <li><a href="{{ route($route) }}" class="hover:text-slate-900">{{ $label }}</a></li>
                             @endforeach

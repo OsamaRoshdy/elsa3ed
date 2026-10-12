@@ -32,6 +32,15 @@
             </span>
         </label>
 
+        <label class="flex cursor-pointer items-start gap-3 rounded-xl bg-slate-50 p-4">
+            <input type="hidden" name="catalogue_show_out_of_stock" value="0">
+            <input type="checkbox" name="catalogue_show_out_of_stock" value="1" @checked(old('catalogue_show_out_of_stock', $showsOutOfStock)) class="mt-0.5 size-4 rounded border-slate-300 text-brand-600">
+            <span>
+                <span class="block text-sm font-semibold text-slate-900">{{ __('Show out-of-stock products') }}</span>
+                <span class="block text-xs text-slate-500">{{ __('When off, products with no stock are hidden from the store. Products whose stock isn’t tracked in Daftra stay visible.') }}</span>
+            </span>
+        </label>
+
         <div class="flex justify-end border-t border-slate-100 pt-5">
             <button type="submit" class="btn-primary">{{ __('Save changes') }}</button>
         </div>

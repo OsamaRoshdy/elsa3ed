@@ -32,6 +32,11 @@ class AppServiceProvider extends ServiceProvider
         View::composer('components.layouts.app', function ($view) {
             $user = auth()->user();
 
+            // Admins get the sidebar portal, except on storefront pages where they preview the store.
+            $usesAdminLayout = $user?->isAdmin() && ! request()->routeIs('home', 'products.*');
+
+            $view->with('usesAdminLayout', $usesAdminLayout);
+
             $view->with('navCounts', match (true) {
                 $user?->isAdmin() => ['admin.orders' => Order::where('status', Order::STATUS_SUBMITTED)->count()],
                 (bool) $user?->daftra_client_id => ['cart' => (int) OrderItem::whereHas('order', fn ($query) => $query
@@ -40,10 +45,10 @@ class AppServiceProvider extends ServiceProvider
                 default => [],
             });
 
-            // Store header/footer (clients and guests): category menu, brands with models for "Select your car".
-            if (! $user?->isAdmin()) {
+            // Store header/footer: category menu, brands with models for "Select your car".
+            if (! $usesAdminLayout) {
                 $view->with([
-                    'storeCategories' => Category::whereHas('products', fn ($query) => $query->active())->orderBy('name')->get(['id', 'name', 'image_path']),
+                    'storeCategories' => Category::whereHas('products', fn ($query) => $query->visibleInStore())->orderBy('name')->get(['id', 'name', 'image_path']),
                     'storeBrands' => Brand::forVehicleFinder(),
                     'garage' => app(Garage::class),
                 ]);

@@ -150,6 +150,32 @@ class Product extends Model
         $query->where('is_active', true);
     }
 
+    /**
+     * Products whose stock isn't tracked in Daftra (stock_quantity = null) count as in stock.
+     */
+    public function scopeInStock(Builder $query): void
+    {
+        $query->where(fn (Builder $query) => $query->whereNull('stock_quantity')->orWhere('stock_quantity', '>', 0));
+    }
+
+    /**
+     * Products shown on the storefront: active ones, minus out-of-stock ones when the admin hides them (Admin → Settings).
+     */
+    public function scopeVisibleInStore(Builder $query): void
+    {
+        $query->active()->when(! static::storeShowsOutOfStock(), fn (Builder $query) => $query->inStock());
+    }
+
+    public static function storeShowsOutOfStock(): bool
+    {
+        return (bool) Setting::get('catalogue_show_out_of_stock', true);
+    }
+
+    public function isVisibleInStore(): bool
+    {
+        return $this->is_active && (static::storeShowsOutOfStock() || $this->stock_quantity === null || (float) $this->stock_quantity > 0);
+    }
+
     public function scopeForBrand(Builder $query, ?int $brandId): void
     {
         if (! $brandId) {

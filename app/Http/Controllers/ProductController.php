@@ -38,14 +38,16 @@ class ProductController extends Controller
         $brand = empty($filters['brand']) ? null : Brand::find($filters['brand']);
         $carModel = $brand && ! empty($filters['model']) ? $brand->carModels()->find($filters['model']) : null;
 
-        $products = Product::active()
+        $showsOutOfStock = Product::storeShowsOutOfStock();
+
+        $products = Product::visibleInStore()
             ->with(['brands', 'categories', 'tags'])
             ->search($filters['q'] ?? null)
             ->forCategory($filters['category'] ?? null)
             ->forBrand($filters['brand'] ?? null)
             ->fitsVehicle($carModel?->id, $filters['year'] ?? null)
             ->forTag($filters['tag'] ?? null)
-            ->when(($filters['stock'] ?? null) === 'in_stock', fn ($query) => $query->where(fn ($query) => $query->whereNull('stock_quantity')->orWhere('stock_quantity', '>', 0)))
+            ->when(($filters['stock'] ?? null) === 'in_stock', fn ($query) => $query->inStock())
             ->when(($filters['stock'] ?? null) === 'out', fn ($query) => $query->whereNotNull('stock_quantity')->where('stock_quantity', '<=', 0))
             ->when(($filters['stock'] ?? null) === 'low', fn ($query) => $query->lowStock())
             ->when(($filters['stock'] ?? null) === 'available', fn ($query) => $query->where(function ($query) use ($defaultThreshold) {
@@ -56,10 +58,10 @@ class ProductController extends Controller
             ->paginate(24)
             ->withQueryString();
 
-        $categories = Category::whereHas('products', fn ($query) => $query->active())->orderBy('name')->get(['id', 'name']);
-        $tags = Tag::whereHas('products', fn ($query) => $query->active())->orderBy('name')->get(['id', 'name', 'color']);
-        $brands = Brand::withCount(['products' => fn ($query) => $query->active()])
-            ->whereHas('products', fn ($query) => $query->active())
+        $categories = Category::whereHas('products', fn ($query) => $query->visibleInStore())->orderBy('name')->get(['id', 'name']);
+        $tags = Tag::whereHas('products', fn ($query) => $query->visibleInStore())->orderBy('name')->get(['id', 'name', 'color']);
+        $brands = Brand::withCount(['products' => fn ($query) => $query->visibleInStore()])
+            ->whereHas('products', fn ($query) => $query->visibleInStore())
             ->orderBy('name')
             ->get(['id', 'name', 'logo_path']);
 
@@ -75,18 +77,19 @@ class ProductController extends Controller
             'filters' => $filters,
             'sort' => $sort,
             'clientsCanSort' => $clientsCanSort,
+            'showsOutOfStock' => $showsOutOfStock,
             'lastSyncedAt' => Product::max('last_synced_at'),
         ]);
     }
 
     public function show(Product $product, Garage $garage): View
     {
-        abort_unless($product->is_active, 404);
+        abort_unless($product->isVisibleInStore(), 404);
 
         $product->load(['brands', 'categories', 'tags', 'fitments.carModel.brand']);
 
         // Related products share at least one category with this product.
-        $related = $product->categories->isEmpty() ? collect() : Product::active()
+        $related = $product->categories->isEmpty() ? collect() : Product::visibleInStore()
             ->whereHas('categories', fn ($query) => $query->whereKey($product->categories->modelKeys()))
             ->whereKeyNot($product->id)
             ->with('tags')

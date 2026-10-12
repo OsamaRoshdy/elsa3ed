@@ -17,6 +17,7 @@ class SettingController extends Controller
         return view('admin.settings', [
             'catalogueSort' => Setting::get('catalogue_sort', Product::DEFAULT_SORT),
             'clientsCanSort' => (bool) Setting::get('catalogue_client_sort', true),
+            'showsOutOfStock' => Product::storeShowsOutOfStock(),
         ]);
     }
 
@@ -25,10 +26,12 @@ class SettingController extends Controller
         $validated = $request->validate([
             'catalogue_sort' => ['required', Rule::in(array_keys(Product::SORTS))],
             'catalogue_client_sort' => ['nullable', 'boolean'],
+            'catalogue_show_out_of_stock' => ['nullable', 'boolean'],
         ]);
 
         Setting::set('catalogue_sort', $validated['catalogue_sort']);
         Setting::set('catalogue_client_sort', $request->boolean('catalogue_client_sort') ? '1' : '0');
+        Setting::set('catalogue_show_out_of_stock', $request->boolean('catalogue_show_out_of_stock') ? '1' : '0');
 
         return back()->with('success', __('Settings saved.'));
     }

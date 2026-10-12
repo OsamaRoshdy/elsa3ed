@@ -4,9 +4,9 @@
     $user = auth()->user();
     $isRtl = app()->getLocale() === 'ar';
 
-    // Admins get the sidebar portal; clients and guests get the storefront layout.
+    // $usesAdminLayout comes from the view composer in AppServiceProvider.
     $navigation = match (true) {
-        $user?->isAdmin() => [
+        $usesAdminLayout => [
             ['admin.dashboard', 'admin.dashboard', 'home', __('Dashboard')],
             ['admin.products.index', 'admin.products.*', 'cube', __('Products')],
             ['admin.categories.index', 'admin.categories.*', 'squares', __('Categories')],
@@ -48,7 +48,7 @@
 </head>
 <body class="h-full font-sans text-slate-800 antialiased">
 
-@if ($user?->isAdmin())
+@if ($usesAdminLayout)
     <div x-data="{ sidebarOpen: false }" class="min-h-full">
         {{-- Mobile overlay --}}
         <div x-cloak x-show="sidebarOpen" x-transition.opacity @click="sidebarOpen = false" class="fixed inset-0 z-40 bg-slate-900/40 backdrop-blur-sm lg:hidden"></div>

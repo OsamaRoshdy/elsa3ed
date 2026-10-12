@@ -27,8 +27,19 @@ test('home page shows categories, latest parts and brands', function () {
         ->assertSee(route('products.index', ['brand' => $kia->id]), false);
 });
 
-test('admins are sent from the store home to the admin dashboard', function () {
-    $this->actingAs(admin())->get(route('home'))->assertRedirect(route('admin.dashboard'));
+test('admins can view the store with a link back to the admin dashboard', function () {
+    $this->actingAs(admin())
+        ->get(route('home'))
+        ->assertOk()
+        ->assertSee(route('admin.dashboard'), false)
+        ->assertDontSee(route('orders.index'), false);
+});
+
+test('admins can browse the store products', function () {
+    $product = Product::factory()->create(['name' => 'Side mirror glass']);
+
+    $this->actingAs(admin())->get(route('products.index'))->assertOk()->assertSee('Side mirror glass');
+    $this->actingAs(admin())->get(route('products.show', $product))->assertOk();
 });
 
 test('clients get the store layout with their account menu', function () {
